@@ -8,7 +8,11 @@
 module MyCompany
   module Helpers
     def marker_file_exists?
-      File.exist?('/marker_file')
+      database_marker_exist?('/marker_file')
+    end
+
+    def database_marker_exist?(file)
+      File.exist?(file)
     end
   end
 end
@@ -28,4 +32,8 @@ execute('database_script') do
     # This useful in declaring complicated guards more clearly as well.
     marker_file_exists?
   end
+end
+
+execute('database_script_2') do
+  only_if { database_marker_exist?('please_seed_db') }
 end
