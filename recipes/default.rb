@@ -4,7 +4,11 @@
 #
 # Copyright (c) 2016 The Authors, All Rights Reserved.
 
-# Normally this would be defined in the lib directory
+# Define the helper methods within a module for namespacing purposes and
+# so that we can have the resources that need this functionality to extend it.
+#
+# NOTE: Normally this would be defined in the libraries directory
+#
 module MyCompany
   module Helpers
     def marker_file_exists?
@@ -17,7 +21,11 @@ module MyCompany
   end
 end
 
-# Normally this would be defined in the lib directory
+# Ruby classes can include modules; which is like importing methods into the
+# instances of this class. In this case, it means that all Execute resources
+# would have this helper method available.
+# NOTE: This is effects all Execute Resources which is not always desireable.
+#
 Chef::Resource::Execute.include MyCompany::Helpers
 
 execute('database_script') do
@@ -25,7 +33,7 @@ execute('database_script') do
     # Using File as a class is hard to use with tests because if you
     # override some of the default behaviors it will cause other issues
     # when other processes like RSpec or Fauxhai load the data.
-
+    #
     # File.exist?('/marker_file')
 
     # The easier thing is to place a method around it which is easier to stub.
@@ -35,5 +43,7 @@ execute('database_script') do
 end
 
 execute('database_script_2') do
+  # This is a more sophiscated method that allows us to check for a particular
+  # file that we specify as a parameter
   only_if { database_marker_exist?('please_seed_db') }
 end
